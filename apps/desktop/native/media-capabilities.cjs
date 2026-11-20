@@ -7,11 +7,20 @@ function run(command, args, timeoutMs = 8000) {
     const child = spawn(command, args, { windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
     let stdout = "", stderr = "", settled = false;
     const finish = (result) => { if (!settled) { settled = true; resolve(result); } };
-    const timer = setTimeout(() => { child.kill(); finish({ ok: false, stdout, stderr, output: stdout + "\\n" + stderr, error: "timeout" }); }, timeoutMs);
+    const timer = setTimeout(() => {
+      child.kill();
+      finish({ ok: false, stdout, stderr, output: stdout + "\n" + stderr, error: "timeout" });
+    }, timeoutMs);
     child.stdout.on("data", chunk => { stdout += chunk.toString(); });
     child.stderr.on("data", chunk => { stderr += chunk.toString(); });
-    child.on("error", error => { clearTimeout(timer); finish({ ok: false, stdout, stderr, output: stdout + "\\n" + stderr, error: error.message }); });
-    child.on("close", code => { clearTimeout(timer); finish({ ok: code === 0, code, stdout, stderr, output: stdout + "\\n" + stderr }); });
+    child.on("error", error => {
+      clearTimeout(timer);
+      finish({ ok: false, stdout, stderr, output: stdout + "\n" + stderr, error: error.message });
+    });
+    child.on("close", code => {
+      clearTimeout(timer);
+      finish({ ok: code === 0, code, stdout, stderr, output: stdout + "\n" + stderr });
+    });
   });
 }
 
@@ -28,9 +37,9 @@ async function detectMediaCapabilities() {
   const enc = encoders.output || "";
   const dec = decoders.output || "";
   const hw = hwaccels.output || "";
-  const gpuLine = nvidia.stdout.trim().split(/\r?\n/)[0] || "";
+  const gpuLine = nvidia.output.trim().split(/\r?\n/)[0] || "";
   const gpuParts = gpuLine.split(",").map(x => x.trim());
-  const has = (text, name) => new RegExp("\\b" + name.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&") + "\\b").test(text);
+  const has = (text, name) => text.includes(name);
 
   return {
     detectedAt: new Date().toISOString(),
@@ -38,7 +47,7 @@ async function detectMediaCapabilities() {
     cpuModel: cpu.output.trim() || null,
     systemRamGB: Math.round(os.totalmem() / (1024 ** 3)),
     ffmpegAvailable: version.ok,
-    ffmpegVersion: version.stdout.split(/\r?\n/)[0] || null,
+    ffmpegVersion: version.output.split(/\r?\n/)[0] || null,
     nvidia: {
       detected: nvidia.ok && Boolean(gpuParts[0]),
       model: gpuParts[0] || null,
@@ -64,7 +73,7 @@ async function detectMediaCapabilities() {
         hevc: has(enc, "hevc_qsv"),
         av1: has(enc, "av1_qsv")
       },
-      note: "FFmpeg listing is not proof that the Intel iGPU is enabled or that QSV device initialization succeeds. Perform a runtime device-init probe before use."
+      note: "An encoder listing is not proof that the Intel iGPU is enabled or QSV device initialization succeeds. Perform a runtime device-init probe before use."
     },
     softwareFallback: {
       h264: has(enc, "libx264"),
