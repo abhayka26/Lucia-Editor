@@ -1,0 +1,2 @@
+const {contextBridge}=require("electron");
+contextBridge.exposeInMainWorld("premiereStudio",Object.freeze({platform:process.platform,appVersion:"0.1.0",capabilities:Object.freeze({nativeRendering:false,localProjectFiles:false})}));
