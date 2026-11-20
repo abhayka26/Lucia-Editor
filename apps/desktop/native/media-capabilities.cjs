@@ -25,7 +25,7 @@ function run(command, args, timeoutMs = 8000) {
 }
 
 async function detectMediaCapabilities() {
-  const [version, encoders, decoders, hwaccels, nvidia, cpu] = await Promise.all([
+  const [version, encoders, decoders, hwaccels, filters, nvidia, cpu] = await Promise.all([
     run("ffmpeg", ["-hide_banner", "-version"]),
     run("ffmpeg", ["-hide_banner", "-encoders"]),
     run("ffmpeg", ["-hide_banner", "-decoders"]),
@@ -36,7 +36,7 @@ async function detectMediaCapabilities() {
 
   const enc = encoders.output || "";
   const dec = decoders.output || "";
-  const hw = hwaccels.output || "";
+  const hw = hwaccels.output || "";\n  const filterList = filters.output || "";
   const gpuLine = nvidia.output.trim().split(/\r?\n/)[0] || "";
   const gpuParts = gpuLine.split(",").map(x => x.trim());
   const has = (text, name) => text.includes(name);
@@ -59,7 +59,7 @@ async function detectMediaCapabilities() {
         av1: has(enc, "av1_nvenc")
       },
       nvdec: {
-        cudaHwaccelListed: has(hw, "cuda"),
+        cudaHwaccelListed: has(hw, "cuda"),\n        scaleCudaFilterListed: has(filterList, "scale_cuda"),
         h264CuvidListed: has(dec, "h264_cuvid"),
         hevcCuvidListed: has(dec, "hevc_cuvid"),
         av1CuvidListed: has(dec, "av1_cuvid")
