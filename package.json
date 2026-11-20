@@ -1,1 +1,15 @@
-{"name":"premiere-studio","version":"0.1.0","private":true,"workspaces":["apps/web","apps/desktop","packages/editor-core"],"scripts":{"dev:web":"npm run dev --workspace @premiere-studio/web","dev:desktop":"concurrently -k \"npm:dev:web\" \"npm:desktop\"","desktop":"npm run dev --workspace @premiere-studio/desktop","build":"npm run build --workspace @premiere-studio/editor-core && npm run build --workspace @premiere-studio/web","test":"npm run test --workspaces --if-present","typecheck":"npm run typecheck --workspaces --if-present"},"devDependencies":{"concurrently":"^9.1.2"}}
+{
+  "name": "premiere-studio",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["apps/web", "apps/desktop", "packages/editor-core"],
+  "scripts": {
+    "dev:web": "npm run dev --workspace @premiere-studio/web",
+    "desktop:electron": "npm run dev --workspace @premiere-studio/desktop",
+    "desktop": "concurrently -k \"npm:dev:web\" \"npm:desktop:electron\"",
+    "build": "npm run build --workspace @premiere-studio/editor-core && npm run build --workspace @premiere-studio/web",
+    "test": "npm run test --workspace @premiere-studio/editor-core",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {"concurrently": "^9.1.2"}
+}
