@@ -1,1 +1,8 @@
-{"name":"@premiere-studio/desktop","version":"0.1.0","private":true,"main":"main.cjs","scripts":{"dev":"wait-on tcp:5173 && electron ."},"devDependencies":{"electron":"^34.0.0","wait-on":"^8.0.1"}}
+{
+  "name": "@premiere-studio/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {"dev": "wait-on tcp:5173 && electron ."},
+  "devDependencies": {"electron": "^45.4.1", "wait-on": "^8.0.1"}
+}
